@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foro - Bosques de Panamá</title>
+
+<style>
+
+/* ===== FONDO NATURAL ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background:
+    linear-gradient(rgba(78,52,46,0.6), rgba(78,52,46,0.6)),
+    url("https://images.unsplash.com/photo-1501785888041-af3ef285b470")
+    no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+header {
+    text-align: center;
+    padding: 30px 20px 10px 20px;
+    color: #FFF;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+}
+
+/* ===== NAV ESTILO NATURAL ===== */
+nav {
+    background: rgba(78,52,46,0.95);
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+nav a {
+    color: #D7CCC8;
+    margin: 0 14px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: 0.25s;
+}
+
+nav a:hover {
+    color: #FFFFFF;
+}
+
+/* BOTÓN MODO OSCURO */
+nav a:last-child {
+    background: linear-gradient(135deg, #6D4C41, #4E342E);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 25px;
+    margin-left: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+nav a:last-child:hover {
+    transform: scale(1.05);
+}
+
+/* ===== CONTENEDOR ===== */
+main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* ===== LOGIN CENTRADO ===== */
+#loginForo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#loginForo h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ===== TARJETAS GLASS NATURAL ===== */
+.section-info {
+    background: rgba(239, 235, 233, 0.95);
+    backdrop-filter: blur(14px);
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    padding: 30px;
+    margin: 30px auto;
+    max-width: 850px;
+    width: 90%;
+    color: #3E2723;
+}
+
+/* ===== INPUTS ===== */
+input, textarea {
+    width: 100%;
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #BCAAA4;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    outline: none;
+}
+
+input:focus, textarea:focus {
+    border-color: #6D4C41;
+    box-shadow: 0 0 5px rgba(109,76,65,0.4);
+}
+
+/* ===== BOTONES ===== */
+button {
+    background: linear-gradient(135deg, #6D4C41, #4E342E);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #5D4037, #3E2723);
+}
+
+/* ===== COMENTARIOS ===== */
+.comentario-card {
+    background: #FFF;
+    padding: 18px;
+    margin: 18px 0;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.respuesta-card {
+    background: #EFEBE9;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    border-left: 4px solid #6D4C41;
+}
+
+img {
+    margin-top: 12px;
+    border-radius: 12px;
+    max-width: 100%;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>💬 Foro Educativo - Bosques de Panamá</h1>
+</header>
+
+<nav>
+    <a href="index.html">Inicio</a>
+    <a href="bosque-humedo.html">Bosque Tropical Húmedo</a>
+    <a href="bosque-seco.html">Bosque Tropical Seco</a>
+    <a href="bosque-nuboso.html">Bosque Nuboso</a>
+    <a href="comparador.html">Comparador</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="foro.html">Foro</a>
+    <a href="#">🌙 Modo Oscuro</a>
+</nav>
+
+<main>
+
+<section class="section-info" id="loginForo">
+    <h2>👤 Ingresar al Foro</h2>
+    <input type="text" id="nombreForo" placeholder="Escribe tu nombre">
+    <br><br>
+    <button onclick="iniciarForo()">Entrar al Foro</button>
+</section>
+
+<section class="section-info" id="foroSection" style="display:none;">
+    <h2>🌎 Comunidad</h2>
+
+    <textarea id="comentarioInput" placeholder="Escribe tu comentario..." style="height:110px;"></textarea>
+    <br><br>
+    <input type="file" id="imagenInput" accept="image/*">
+    <br><br>
+    <button onclick="publicarComentario()">📤 Publicar Comentario</button>
+
+    <h3>📢 Comentarios</h3>
+    <div id="listaComentarios"></div>
+</section>
+
+</main>
+
+<script>
+
+let usuarioForo = "";
+
+function iniciarForo() {
+    const nombre = document.getElementById("nombreForo").value.trim();
+    if (!nombre) {
+        alert("Ingresa tu nombre");
+        return;
+    }
+
+    usuarioForo = nombre;
+    document.getElementById("loginForo").style.display = "none";
+    document.getElementById("foroSection").style.display = "block";
+    cargarComentarios();
+}
+
+function publicarComentario() {
+    const texto = document.getElementById("comentarioInput").value.trim();
+    const imagenArchivo = document.getElementById("imagenInput").files[0];
+
+    if (!texto && !imagenArchivo) {
+        alert("Escribe algo o sube una imagen");
+        return;
+    }
+
+    if (imagenArchivo) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            guardarComentario(texto, e.target.result);
+        };
+        reader.readAsDataURL(imagenArchivo);
+    } else {
+        guardarComentario(texto, null);
+    }
+}
+
+function guardarComentario(texto, imagenBase64) {
+    let comentarios = JSON.parse(localStorage.getItem("foroBosquesAvanzado")) || [];
+
+    const nuevo = {
+        id: Date.now(),
+        nombre: usuarioForo,
+        mensaje: texto,
+        imagen: imagenBase64,
+        fecha: new Date().toLocaleString(),
+        respuestas: []
+    };
+
+    comentarios.push(nuevo);
+    localStorage.setItem("foroBosquesAvanzado", JSON.stringify(comentarios));
+
+    document.getElementById("comentarioInput").value = "";
+    document.getElementById("imagenInput").value = "";
+
+    cargarComentarios();
+}
+
+function responderComentario(id) {
+    const texto = prompt("Escribe tu respuesta:");
+    if (!texto) return;
+
+    let comentarios = JSON.parse(localStorage.getItem("foroBosquesAvanzado")) || [];
+
+    comentarios = comentarios.map(c => {
+        if (c.id === id) {
+            c.respuestas.push({
+                nombre: usuarioForo,
+                mensaje: texto,
+                fecha: new Date().toLocaleString()
+            });
+        }
+        return c;
+    });
+
+    localStorage.setItem("foroBosquesAvanzado", JSON.stringify(comentarios));
+    cargarComentarios();
+}
+
+function cargarComentarios() {
+    const contenedor = document.getElementById("listaComentarios");
+    contenedor.innerHTML = "";
+
+    let comentarios = JSON.parse(localStorage.getItem("foroBosquesAvanzado")) || [];
+
+    comentarios.slice().reverse().forEach(c => {
+
+        const div = document.createElement("div");
+        div.className = "comentario-card";
+
+        div.innerHTML = `
+            <strong>👤 ${c.nombre}</strong>
+            <p>${c.mensaje}</p>
+            ${c.imagen ? `<img src="${c.imagen}">` : ""}
+            <br><small>🕒 ${c.fecha}</small>
+            <br><br>
+            <button onclick="responderComentario(${c.id})">💬 Responder</button>
+            <div style="margin-top:12px; padding-left:15px;">
+                ${c.respuestas.map(r => `
+                    <div class="respuesta-card">
+                        <strong>↳ ${r.nombre}</strong>: ${r.mensaje}
+                        <br><small>${r.fecha}</small>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+        contenedor.appendChild(div);
+    });
+}
+
+</script>
+
+</body>
+</html>

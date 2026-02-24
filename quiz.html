@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz PRO - Bosques de Panamá</title>
+<link rel="stylesheet" href="estilos.css">
+
+<style>
+body{
+margin:0;
+font-family:'Segoe UI', Arial, sans-serif;
+background:
+linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),
+url("https://images.unsplash.com/photo-1501785888041-af3ef285b470")
+no-repeat center center fixed;
+background-size:cover;
+min-height:100vh;
+}
+
+header{
+text-align:center;
+padding:30px;
+color:white;
+}
+
+nav{
+text-align:center;
+padding:15px;
+backdrop-filter:blur(6px);
+}
+
+nav a{
+color:#cbb6ff;
+margin:0 10px;
+text-decoration:none;
+font-weight:bold;
+}
+
+nav a:hover{
+color:white;
+}
+
+.quiz-container{
+max-width:850px;
+margin:40px auto;
+padding:35px;
+border-radius:25px;
+background:rgba(255,255,255,0.92);
+backdrop-filter:blur(15px);
+box-shadow:0 25px 60px rgba(0,0,0,0.35);
+text-align:center;
+width:90%;
+}
+
+#login{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+
+input{
+width:70%;
+padding:12px;
+border-radius:12px;
+border:1px solid #ccc;
+font-size:16px;
+margin-bottom:15px;
+}
+
+button{
+background:linear-gradient(135deg,#2e7d32,#1b5e20);
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+select{
+padding:10px;
+border-radius:10px;
+margin-bottom:20px;
+font-weight:bold;
+}
+
+.pregunta{
+font-size:20px;
+margin-bottom:20px;
+color:#5B21B6;
+font-weight:bold;
+}
+
+.opciones button{
+display:block;
+width:100%;
+margin:10px 0;
+background:#eee;
+color:#222; /* letras oscuras visibles */
+}
+
+.opciones button:hover{
+background:#ddd;
+}
+
+.correcta{
+background:#22c55e !important;
+color:white;
+}
+
+.incorrecta{
+background:#ef4444 !important;
+color:white;
+}
+
+.barra{
+height:14px;
+background:#2b1ed8;
+border-radius:12px;
+margin-bottom:20px;
+overflow:hidden;
+}
+
+.progreso{
+height:100%;
+width:0%;
+background:#5B21B6;
+transition:width 0.5s ease;
+}
+
+.ranking{
+margin-top:30px;
+text-align:left;
+background:#f3f0ff;
+padding:15px;
+border-radius:15px;
+color:#222;
+}
+
+body.oscuro .quiz-container{
+background:rgba(40,40,60,0.95);
+color:white;
+}
+
+body.oscuro .ranking{
+background:#2a2a3a;
+color:white;
+}
+
+body.oscuro .opciones button{
+background:#3a3a4a;
+color:white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Quiz : Bosques de Panamá</h1>
+<p>Quiz interactivo con ranking y dificultad</p>
+</header>
+
+<nav>
+<a href="index.html">Inicio</a>
+<a href="bosque-humedo.html">Bosque Tropical Húmedo</a>
+<a href="bosque-seco.html">Bosque Tropical Seco</a>
+<a href="bosque-nuboso.html">Bosque Nuboso</a>
+<a href="comparador.html">Comparador</a>
+<a href="quiz.html">Quiz</a>
+<a href="foro.html">Foro</a>
+<button id="modoBtn" onclick="cambiarModo()">🌙 Modo Oscuro</button>
+</nav>
+
+<section>
+<div class="quiz-container">
+
+<div id="login">
+<h2>Iniciar Quiz</h2>
+<input type="text" id="nombreJugador" placeholder="Escribe tu nombre">
+<button onclick="iniciarSesion()">🚀 Comenzar Quiz</button>
+</div>
+
+<div id="panelQuiz" style="display:none;">
+<h3>🎯 Dificultad</h3>
+<select id="dificultad" onchange="reiniciarQuiz()">
+<option value="facil">Fácil (4 preguntas)</option>
+<option value="medio">Medio (5 preguntas)</option>
+<option value="dificil">Difícil (7 preguntas)</option>
+</select>
+
+<div class="barra"><div class="progreso" id="progreso"></div></div>
+<div id="quiz"></div>
+<div class="ranking" id="ranking"></div>
+</div>
+
+</div>
+</section>
+
+<footer>
+<p style="text-align:center;color:white;">Proyecto Educativo | Bosques de Panamá | 2026</p>
+</footer>
+
+<script>
+let jugador="";
+let preguntas=[];
+let indice=0;
+let puntos=0;
+
+/* ⭐ SONIDOS ELEGANTES */
+const sonidos={
+correcto:new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"),
+incorrecto:new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg")
+};
+
+const bancoPreguntas={
+facil:[
+{p:"¿Qué bosque tiene lluvias constantes?",o:["Bosque Seco","Bosque Nuboso","Bosque Húmedo"],c:"Bosque Húmedo"},
+{p:"¿Qué bosque tiene estación seca?",o:["Bosque Seco","Bosque Húmedo","Manglar"],c:"Bosque Seco"},
+{p:"¿Dónde hay neblina frecuente?",o:["Bosque Nuboso","Sabana","Desierto"],c:"Bosque Nuboso"},
+{p:"¿Cuál tiene mayor biodiversidad?",o:["Bosque Húmedo","Bosque Seco","Pastizal"],c:"Bosque Húmedo"}
+],
+medio:[
+{p:"¿En qué zona predomina el bosque seco en Panamá?",o:["Arco Seco","Darién","Bocas del Toro"],c:"Arco Seco"},
+{p:"Característica clave del bosque nuboso:",o:["Alta neblina y humedad","Sequía extrema","Suelos áridos"],c:"Alta neblina y humedad"},
+{p:"Bosque con árboles siempre verdes:",o:["Bosque Húmedo","Bosque Seco","Sabana"],c:"Bosque Húmedo"},
+{p:"Vegetación del bosque seco:",o:["Caducifolia resistente","Siempre verde gigante","Solo musgos"],c:"Caducifolia resistente"},
+{p:"Función ecológica principal de los bosques:",o:["Regular clima y biodiversidad","Solo madera","Ninguna"],c:"Regular clima y biodiversidad"}
+],
+dificil:[
+{p:"¿Qué bosque tiene estratos de hasta 40m?",o:["Bosque Húmedo","Bosque Seco","Bosque Nuboso"],c:"Bosque Húmedo"},
+{p:"Mayor endemismo por altitud:",o:["Bosque Nuboso","Bosque Seco","Sabana"],c:"Bosque Nuboso"},
+{p:"Factor que acelera nutrientes en bosque húmedo:",o:["Alta humedad y calor","Sequía","Baja fauna"],c:"Alta humedad y calor"},
+{p:"Bosque con suelos menos fértiles por sequía:",o:["Bosque Seco","Bosque Húmedo","Bosque Nuboso"],c:"Bosque Seco"},
+{p:"Mayor captura de carbono:",o:["Bosque Húmedo","Pastizales","Zonas urbanas"],c:"Bosque Húmedo"},
+{p:"Ubicación principal del bosque nuboso:",o:["Tierras altas de Chiriquí","Costa baja","Islas secas"],c:"Tierras altas de Chiriquí"},
+{p:"Adaptación común del bosque nuboso:",o:["Epífitas y musgos","Espinas gruesas","Hojas pequeñas por sequía"],c:"Epífitas y musgos"}
+]
+};
+
+function iniciarSesion(){
+const nombre=document.getElementById("nombreJugador").value.trim();
+if(nombre===""){
+alert("Por favor escribe tu nombre");
+return;
+}
+jugador=nombre;
+document.getElementById("login").style.display="none";
+document.getElementById("panelQuiz").style.display="block";
+reiniciarQuiz();
+mostrarRanking();
+}
+
+function mezclarArray(array){
+return array.sort(()=>Math.random()-0.5);
+}
+
+function reiniciarQuiz(){
+const nivel=document.getElementById("dificultad").value;
+preguntas=bancoPreguntas[nivel].map(q=>({
+...q,
+opciones:mezclarArray([...q.o])
+}));
+indice=0;
+puntos=0;
+cargarPregunta();
+}
+
+function cargarPregunta(){
+if(indice>=preguntas.length){
+finalizar();
+return;
+}
+actualizarBarra();
+const q=preguntas[indice];
+document.getElementById("quiz").innerHTML=
+`<div class="pregunta">(${indice+1}/${preguntas.length}) ${q.p}</div>
+<div class="opciones">
+${q.opciones.map(op=>`<button onclick="verificar('${op}',this)">${op}</button>`).join("")}
+</div>`;
+}
+
+function verificar(resp,btn){
+const correcta=preguntas[indice].c;
+const botones=document.querySelectorAll(".opciones button");
+botones.forEach(b=>b.disabled=true);
+
+if(resp===correcta){
+btn.classList.add("correcta");
+sonidos.correcto.play();
+puntos+=10;
+}else{
+btn.classList.add("incorrecta");
+botones.forEach(b=>{
+if(b.textContent===correcta){
+b.classList.add("correcta");
+}
+});
+sonidos.incorrecto.play();
+}
+
+setTimeout(()=>{
+indice++;
+cargarPregunta();
+},1200);
+}
+
+function actualizarBarra(){
+document.getElementById("progreso").style.width=(indice/preguntas.length)*100+"%";
+}
+
+function finalizar(){
+guardarRanking(jugador,puntos);
+document.getElementById("quiz").innerHTML=
+`<h2>🎉 Quiz Finalizado</h2>
+<p><strong>Jugador:</strong> ${jugador}</p>
+<p><strong>Puntaje:</strong> ${puntos} pts</p>
+<button onclick="reiniciarQuiz()">🔄 Reintentar</button>`;
+mostrarRanking();
+}
+
+function guardarRanking(nombre,puntaje){
+let ranking=JSON.parse(localStorage.getItem("rankingBosques"))||[];
+ranking.push({nombre,puntaje});
+ranking.sort((a,b)=>b.puntaje-a.puntaje);
+ranking=ranking.slice(0,5);
+localStorage.setItem("rankingBosques",JSON.stringify(ranking));
+}
+
+function mostrarRanking(){
+let ranking=JSON.parse(localStorage.getItem("rankingBosques"))||[];
+document.getElementById("ranking").innerHTML=
+"<h4>🏆 Ranking Top 5</h4>"+
+(ranking.length?
+ranking.map((r,i)=>`${i+1}. ${r.nombre} - ${r.puntaje} pts`).join("<br>")
+:"Sin registros aún");
+}
+
+function cambiarModo(){
+document.body.classList.toggle("oscuro");
+let boton=document.getElementById("modoBtn");
+if(document.body.classList.contains("oscuro")){
+boton.innerHTML="☀️ Modo Claro";
+localStorage.setItem("modo","oscuro");
+}else{
+boton.innerHTML="🌙 Modo Oscuro";
+localStorage.setItem("modo","claro");
+}
+}
+
+window.onload=function(){
+let modo=localStorage.getItem("modo");
+if(modo==="oscuro"){
+document.body.classList.add("oscuro");
+document.getElementById("modoBtn").innerHTML="☀️ Modo Claro";
+}
+mostrarRanking();
+};
+</script>
+
+</body>
+</html>

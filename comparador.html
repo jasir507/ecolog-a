@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador Interactivo de Bosques</title>
+
+    <style>
+        /* PALETA NATURAL (MISMA QUE INDEX - SIN VERDE) */
+        :root{
+            --tierra: #6B4F3A;
+            --arena: #C8A27C;
+            --beige: #F5F1EB;
+            --marron-oscuro: #3E2F26;
+            --texto: #2E2A26;
+            --blanco: #FFFFFF;
+        }
+
+        /* FONDO NATURAL ELEGANTE */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(rgba(62, 47, 38, 0.75), rgba(30, 24, 20, 0.85)),
+            url("https://images.unsplash.com/photo-1501785888041-af3ef285b470") no-repeat center center fixed;
+            background-size: cover;
+            color: #F5F1EB;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* TARJETAS TIPO GLASS */
+        .section-info {
+            background: rgba(255, 255, 255, 0.93);
+            backdrop-filter: blur(8px);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 25px auto;
+            max-width: 1100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transition: 0.3s ease;
+            color: var(--texto);
+        }
+
+        body.oscuro .section-info {
+            background: rgba(46, 42, 38, 0.92);
+            color: #EAD7C3;
+        }
+
+        header {
+            text-align: center;
+            color: #F5F1EB;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+            padding: 25px;
+        }
+
+        nav {
+            text-align: center;
+            padding: 12px;
+        }
+
+        nav a, nav button {
+            margin: 6px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: none;
+            text-decoration: none;
+            background: var(--tierra);
+            color: #F5F1EB;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav a:hover, nav button:hover {
+            background: var(--arena);
+            transform: scale(1.05);
+        }
+
+        .controles {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controles label {
+            margin: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(200, 162, 124, 0.25);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .controles label:hover {
+            background: rgba(200, 162, 124, 0.45);
+            transform: scale(1.05);
+        }
+
+        .botones-extra {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .botones-extra button {
+            margin: 6px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 12px;
+            background: var(--tierra);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .botones-extra button:hover {
+            transform: scale(1.08);
+            background: var(--arena);
+        }
+
+        .tabla-comparador {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .tabla-comparador th, .tabla-comparador td {
+            border: 1px solid #ddd;
+            padding: 14px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .tabla-comparador th {
+            background: linear-gradient(135deg, #6B4F3A, #C8A27C);
+            color: white;
+        }
+
+        .tabla-comparador tr:hover {
+            background-color: rgba(200, 162, 124, 0.18);
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .comparador-imgs {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .comparador-imgs img {
+            width: 260px;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: 0.4s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+        }
+
+        .comparador-imgs img:hover {
+            transform: scale(1.06);
+        }
+
+        /* GRAFICA DE BARRAS (COLORES NATURALES) */
+        .grafica-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(245, 241, 235, 0.95);
+        }
+
+        body.oscuro .grafica-container {
+            background: rgba(42, 38, 35, 0.95);
+        }
+
+        .grafica-titulo {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--tierra);
+        }
+
+        .selector-grafica {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .selector-grafica select {
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            border: 2px solid var(--arena);
+            background: var(--blanco);
+            color: var(--texto);
+        }
+
+        .barra-grupo {
+            margin: 18px 0;
+        }
+
+        .barra-label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--marron-oscuro);
+        }
+
+        .barra-fondo {
+            width: 100%;
+            height: 24px;
+            background: #E6DED5;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* COLORES DE BARRAS SIN VERDE */
+        .barra-color {
+            height: 100%;
+            width: 0%;
+            border-radius: 12px;
+            transition: width 1s ease;
+        }
+
+        .color-humedo { background: linear-gradient(90deg, #6B4F3A, #A67C52); }
+        .color-seco { background: linear-gradient(90deg, #C8A27C, #E0C3A3); }
+        .color-nuboso { background: linear-gradient(90deg, #8C857D, #CFC7BE); }
+
+        footer {
+            text-align: center;
+            color: #F5F1EB;
+            text-shadow: 1px 1px 6px black;
+            padding: 20px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Comparador Interactivo de Bosques de Panamá</h1>
+    <p>Activa o desactiva los bosques para compararlos visualmente</p>
+</header>
+
+<nav>
+    <a href="index.html">Inicio</a>
+    <a href="bosque-humedo.html">Bosque Tropical Húmedo</a>
+    <a href="bosque-seco.html">Bosque Tropical Seco</a>
+    <a href="bosque-nuboso.html">Bosque Nuboso</a>
+    <a href="comparador.html">Comparador</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="foro.html">Foro</a>
+    <button id="modoBtn" onclick="cambiarModo()">🌙 Modo Oscuro</button>
+</nav>
+
+<section class="section-info">
+    <h2>- Selecciona los bosques a comparar -</h2>
+
+    <div class="controles">
+        <label><input type="checkbox" checked onchange="toggleColumna('humedo')"> Bosque Húmedo</label>
+        <label><input type="checkbox" checked onchange="toggleColumna('seco')"> Bosque Seco</label>
+        <label><input type="checkbox" checked onchange="toggleColumna('nuboso')"> Bosque Nuboso</label>
+    </div>
+
+    <div class="botones-extra">
+        <button onclick="mostrarTodo()">👁️ Mostrar Todo</button>
+        <button onclick="reiniciarComparador()">🔄 Reiniciar Comparador</button>
+    </div>
+
+    <div class="comparador-imgs">
+        <img src="https://manglar-carbono.utp.ac.pa/wp-content/uploads/2025/03/Selva.webp" alt="Bosque Húmedo">
+        <img src="https://cdn.arcgis.com/sharing/rest/content/items/cd86f6c198134a5ca2b8e9fa25933adf/resources/p5aSEwdXk90e1ybMPgFOq.jpeg?w=50" alt="Bosque Seco">
+        <img src="https://www.thepanamatoursite.com/es/all_tours/images/tours/Excursion-al-Bosque-Nuboso-Safari-y-Vida-Silvestre/slide1.jpg" alt="Bosque Nuboso">
+    </div>
+</section>
+
+<section class="section-info">
+    <h2>📊 Comparación de Características</h2>
+
+    <table class="tabla-comparador">
+        <tr>
+            <th>Características</th>
+            <th class="humedo">Bosque Húmedo</th>
+            <th class="seco">Bosque Seco</th>
+            <th class="nuboso">Bosque Nuboso</th>
+        </tr>
+
+        <tr>
+            <td><strong>Clima</strong></td>
+            <td class="humedo">Cálido y muy húmedo</td>
+            <td class="seco">Cálido con estación seca</td>
+            <td class="nuboso">Fresco y con neblina</td>
+        </tr>
+
+        <tr>
+            <td><strong>Precipitaciones</strong></td>
+            <td class="humedo">Muy altas (2000+ mm)</td>
+            <td class="seco">Bajas y sequías prolongadas</td>
+            <td class="nuboso">Altas lluvias y humedad constante</td>
+        </tr>
+
+        <tr>
+            <td><strong>Temperatura</strong></td>
+            <td class="humedo">24°C - 30°C</td>
+            <td class="seco">25°C - 35°C</td>
+            <td class="nuboso">10°C - 20°C</td>
+        </tr>
+
+        <tr>
+            <td><strong>Biodiversidad</strong></td>
+            <td class="humedo">Muy alta</td>
+            <td class="seco">Media</td>
+            <td class="nuboso">Alta y endémica</td>
+        </tr>
+
+        <tr>
+            <td><strong>Ubicación en Panamá</strong></td>
+            <td class="humedo">Darién y Bocas del Toro</td>
+            <td class="seco">Arco Seco (Azuero)</td>
+            <td class="nuboso">Chiriquí y zonas montañosas</td>
+        </tr>
+
+        <tr>
+            <td><strong>Vegetación</strong></td>
+            <td class="humedo">Árboles altos y densos</td>
+            <td class="seco">Árboles resistentes y bajos</td>
+            <td class="nuboso">Musgos, helechos y epífitas</td>
+        </tr>
+    </table>
+
+    <div class="grafica-container">
+        <h3 class="grafica-titulo">📊 Gráfica Comparativa de Bosques</h3>
+
+        <div class="selector-grafica">
+            <label>Comparar: </label>
+            <select id="tipoGrafica" onchange="actualizarGrafica()">
+                <option value="biodiversidad">Biodiversidad</option>
+                <option value="humedad">Humedad</option>
+                <option value="temperatura">Temperatura</option>
+            </select>
+        </div>
+
+        <div class="barra-grupo">
+            <div class="barra-label">Bosque Húmedo</div>
+            <div class="barra-fondo">
+                <div id="barraHumedo" class="barra-color color-humedo"></div>
+            </div>
+        </div>
+
+        <div class="barra-grupo">
+            <div class="barra-label">Bosque Seco</div>
+            <div class="barra-fondo">
+                <div id="barraSeco" class="barra-color color-seco"></div>
+            </div>
+        </div>
+
+        <div class="barra-grupo">
+            <div class="barra-label">Bosque Nuboso</div>
+            <div class="barra-fondo">
+                <div id="barraNuboso" class="barra-color color-nuboso"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p> | Bosques de Panamá | 2026 </p>
+</footer>
+
+<script>
+function toggleColumna(clase) {
+    const elementos = document.getElementsByClassName(clase);
+    for (let el of elementos) {
+        el.classList.toggle("oculto");
+    }
+}
+
+function mostrarTodo() {
+    const columnas = ["humedo", "seco", "nuboso"];
+    columnas.forEach(clase => {
+        const elementos = document.getElementsByClassName(clase);
+        for (let el of elementos) {
+            el.classList.remove("oculto");
+        }
+    });
+    document.querySelectorAll(".controles input").forEach(c => c.checked = true);
+}
+
+function reiniciarComparador() {
+    location.reload();
+}
+
+function cambiarModo() {
+    document.body.classList.toggle("oscuro");
+    let boton = document.getElementById("modoBtn");
+
+    if (document.body.classList.contains("oscuro")) {
+        boton.innerHTML = "☀️ Modo Claro";
+        localStorage.setItem("modo", "oscuro");
+    } else {
+        boton.innerHTML = "🌙 Modo Oscuro";
+        localStorage.setItem("modo", "claro");
+    }
+}
+
+const datos = {
+    biodiversidad: { humedo: 95, seco: 60, nuboso: 85 },
+    humedad: { humedo: 100, seco: 40, nuboso: 90 },
+    temperatura: { humedo: 80, seco: 95, nuboso: 50 }
+};
+
+function actualizarGrafica() {
+    const tipo = document.getElementById("tipoGrafica").value;
+    document.getElementById("barraHumedo").style.width = datos[tipo].humedo + "%";
+    document.getElementById("barraSeco").style.width = datos[tipo].seco + "%";
+    document.getElementById("barraNuboso").style.width = datos[tipo].nuboso + "%";
+}
+
+window.onload = function() {
+    let modoGuardado = localStorage.getItem("modo");
+    if (modoGuardado === "oscuro") {
+        document.body.classList.add("oscuro");
+        document.getElementById("modoBtn").innerHTML = "☀️ Modo Claro";
+    }
+    actualizarGrafica();
+};
+</script>
+
+</body>
+</html>

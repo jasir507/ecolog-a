@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bosques de Panamá</title>
+    <link rel="stylesheet" href="estilos.css">
+
+    <style>
+        /* PALETA NATURAL SIN VERDE */
+        :root{
+            --tierra: #6B4F3A;
+            --arena: #C8A27C;
+            --beige: #F5F1EB;
+            --marron-oscuro: #3E2F26;
+            --texto: #2E2A26;
+            --blanco: #FFFFFF;
+        }
+
+        body{
+            margin:0;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+            background: var(--beige);
+            color: var(--texto);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header{
+            background: linear-gradient(135deg, #6B4F3A, #C8A27C);
+            color: white;
+            text-align: center;
+            padding: 35px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1{
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p{
+            margin-top: 10px;
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        nav{
+            background: var(--marron-oscuro);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        nav a{
+            color: #F5F1EB;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        nav a:hover{
+            background: var(--arena);
+            color: white;
+        }
+
+        #modoBtn{
+            background: var(--arena);
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #2E2A26;
+            transition: 0.3s;
+        }
+
+        #modoBtn:hover{
+            background: #b88d64;
+        }
+
+        /* HERO */
+        .hero{
+            background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470") center/cover no-repeat;
+            height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay{
+            background: rgba(46, 42, 38, 0.78);
+            color: #F5F1EB;
+            padding: 45px;
+            border-radius: 18px;
+            max-width: 850px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+
+        .overlay h2{
+            font-size: 2.4rem;
+            margin-bottom: 15px;
+            color: #EAD7C3;
+        }
+
+        .overlay p{
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .overlay button{
+            margin-top: 25px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            background: var(--arena);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .overlay button:hover{
+            background: var(--tierra);
+            transform: scale(1.05);
+        }
+
+        /* SOBRE */
+        .sobre{
+            padding: 70px 20px;
+            text-align: center;
+            background: var(--blanco);
+        }
+
+        .sobre h2{
+            color: var(--tierra);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        .sobre p{
+            max-width: 900px;
+            margin: auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #3E2F26;
+        }
+
+        /* ACCESOS RAPIDOS */
+        .accesos{
+            padding: 70px 20px;
+            background: #EFE6DD;
+            text-align: center;
+        }
+
+        .accesos h2{
+            color: var(--tierra);
+            margin-bottom: 45px;
+            font-size: 2.2rem;
+        }
+
+        .cards{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card{
+            background: var(--blanco);
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: 0.3s;
+            border-top: 5px solid var(--arena);
+        }
+
+        .card:hover{
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h3{
+            color: var(--tierra);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .card p{
+            font-size: 15.5px;
+            color: #3E2F26;
+            line-height: 1.6;
+        }
+
+        .card a{
+            display: inline-block;
+            margin-top: 18px;
+            padding: 11px 20px;
+            background: var(--tierra);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .card a:hover{
+            background: var(--arena);
+        }
+
+        footer{
+            background: var(--marron-oscuro);
+            color: #F5F1EB;
+            text-align: center;
+            padding: 18px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* MODO OSCURO NATURAL */
+        .oscuro{
+            background: #1C1A18;
+            color: #EAD7C3;
+        }
+
+        .oscuro header{
+            background: linear-gradient(135deg, #2E2A26, #6B4F3A);
+        }
+
+        .oscuro nav{
+            background: #2A2623;
+        }
+
+        .oscuro .card{
+            background: #2E2A26;
+            color: #EAD7C3;
+        }
+
+        .oscuro .sobre{
+            background: #24211E;
+        }
+
+        .oscuro .accesos{
+            background: #1F1C1A;
+        }
+
+        .oscuro footer{
+            background: #2A2623;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bosque  Panamá</h1>
+    <p>Aprende, compara y comenta los ecosistemas forestales de Panamá</p>
+</header>
+
+<nav>
+    <a href="index.html">Inicio</a>
+    <a href="bosque-humedo.html">Bosque Tropical Húmedo</a>
+    <a href="bosque-seco.html">Bosque Tropical Seco</a>
+    <a href="bosque-nuboso.html">Bosque Nuboso</a>
+    <a href="comparador.html">Comparador</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="foro.html">Foro</a>
+    <button id="modoBtn" onclick="cambiarModo()">🌙 Modo Oscuro</button>
+</nav>
+
+<section class="hero">
+    <div class="overlay">
+        <h2>Descubre la Importancia de los Bosques de Panamá</h2>
+        <p>
+            Esta página educativa interactiva te permitirá conocer los principales tipos de bosques de Panamá,
+            su biodiversidad, importancia ecológica y sus diferencias mediante secciones informativas,
+            comparadores interactivos y actividades educativas diseñadas para el aprendizaje.
+        </p>
+        <button onclick="scrollToAccesos()">Explorar Secciones</button>
+    </div>
+</section>
+
+<section class="sobre">
+    <h2>¿De qué trata esta página?</h2>
+    <p>
+        Este proyecto educativo está enfocado en el estudio de los Bosques de Panamá.
+        Aquí podrás aprender sobre el bosque tropical húmedo, el bosque tropical seco y el bosque nuboso,
+        comprender su importancia ambiental, comparar sus características principales y evaluar tus
+        conocimientos mediante un quiz interactivo y un foro educativo.
+    </p>
+</section>
+
+<section class="accesos" id="accesos">
+    <h2>- Accesos Rápidos a las Secciones -</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Bosque Tropical Húmedo</h3>
+            <p>
+                Conoce el bosque más biodiverso de Panamá, caracterizado por su clima lluvioso,
+                abundante vegetación y gran variedad de especies animales y vegetales.
+            </p>
+            <a href="bosque-humedo.html">Ir a la sección</a>
+        </div>
+
+        <div class="card">
+            <h3>Bosque Tropical Seco</h3>
+            <p>
+                Descubre las adaptaciones de la flora y fauna que habitan en regiones con menor
+                precipitación y estaciones secas prolongadas.
+            </p>
+            <a href="bosque-seco.html">Ir a la sección</a>
+        </div>
+
+        <div class="card">
+            <h3>Bosque Nuboso</h3>
+            <p>
+                Explora los bosques de montaña con neblina constante, clima fresco
+                y alta riqueza ecológica única en Panamá.
+            </p>
+            <a href="bosque-nuboso.html">Ir a la sección</a>
+        </div>
+
+        <div class="card">
+            <h3>Comparador de Bosques</h3>
+            <p>
+                Analiza y compara las diferencias entre los tipos de bosques según su clima,
+                biodiversidad, ubicación geográfica y características ecológicas.
+            </p>
+            <a href="comparador.html">Comparar bosques</a>
+        </div>
+
+        <div class="card">
+            <h3>Quiz Educativo</h3>
+            <p>
+                Evalúa tus conocimientos sobre los bosques de Panamá mediante
+                preguntas interactivas diseñadas para el aprendizaje académico.
+            </p>
+            <a href="quiz.html">Realizar Quiz</a>
+        </div>
+
+        <div class="card">
+            <h3>Foro Educativo</h3>
+            <p>
+                Espacio interactivo donde los usuarios pueden opinar, debatir y compartir
+                ideas sobre la conservación de los ecosistemas forestales.
+            </p>
+            <a href="foro.html">Entrar al Foro</a>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <p> | Bosques de Panamá | 2026</p>
+</footer>
+
+<script>
+function scrollToAccesos() {
+    document.getElementById("accesos").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function cambiarModo() {
+    document.body.classList.toggle("oscuro");
+    let boton = document.getElementById("modoBtn");
+
+    if (document.body.classList.contains("oscuro")) {
+        boton.innerHTML = "☀️ Modo Claro";
+        localStorage.setItem("modo", "oscuro");
+    } else {
+        boton.innerHTML = "🌙 Modo Oscuro";
+        localStorage.setItem("modo", "claro");
+    }
+}
+
+window.onload = function() {
+    let modoGuardado = localStorage.getItem("modo");
+
+    if (modoGuardado === "oscuro") {
+        document.body.classList.add("oscuro");
+        document.getElementById("modoBtn").innerHTML = "☀️ Modo Claro";
+    }
+}
+</script>
+
+</body>
+</html>
